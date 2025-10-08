@@ -120,10 +120,9 @@ async def on_ready():
 @bot.event
 async def on_voice_state_update(member, before, after):
     # User joined the tracked channel
-    if after.channel and after.channel.id == Channel_to_track:
+    if after.channel and after.channel.id == Channel_to_track and (before.channel is None or before.channel.id != Channel_to_track):
         times[member.id] = time.time()
         print(f"{member.name} ({member.id}) has joined the call")
-    
     # User left the tracked channel
     if before.channel and before.channel.id == Channel_to_track and (not after.channel or after.channel.id != Channel_to_track):
         if member.id in times:
@@ -131,7 +130,6 @@ async def on_voice_state_update(member, before, after):
             print(f"{member.name} was in call for {session} seconds")
             update_user_time(member.id, session)
             del times[member.id]
-
 ##############################################################################
 # Slash command for total time leaderboard
 @bot.tree.command(name="leaderboard_total", description="Show the total time leaderboard")
